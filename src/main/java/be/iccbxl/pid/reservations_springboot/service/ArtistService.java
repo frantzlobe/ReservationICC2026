@@ -3,7 +3,6 @@ package be.iccbxl.pid.reservations_springboot.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import be.iccbxl.pid.reservations_springboot.model.Artist;
@@ -11,8 +10,11 @@ import be.iccbxl.pid.reservations_springboot.repository.ArtistRepository;
 
 @Service
 public class ArtistService {
-	@Autowired
-	private ArtistRepository artistRepository;
+	private final ArtistRepository artistRepository;
+
+	public ArtistService(ArtistRepository artistRepository) {
+		this.artistRepository = artistRepository;
+	}
 		
 	public List<Artist> getAllArtists() {
 		List<Artist> artists = new ArrayList<>();
