@@ -13,10 +13,10 @@
 	        <h2>Nouvel artiste</h2>
 	        
                 <form th:action="@{/artists/create}" th:object="${artist}" th:method="post">
-		{% comment %} <div>
-			<label>Id:</label> 
+		<div>
+			<label>Id:</label>
 			<span th:text="${artist.id}">1</span>
-		</div> {% endcomment %}
+		</div>
 		    <div>
 		      	<label>Firstname:</label>
 		       	<input type="text" th:field="*{firstname}" maxlength="60" required>
@@ -31,7 +31,7 @@
 			    </div>
 			    <div>
 			       	<button type="submit" th:text="Ajouter">Ajouter</button>
-			        	{% comment %} <button type="reset" th:text="Réinitialiser">Réinitialiser</button> {% endcomment %}
+			        	<button type="reset" th:text="Réinitialiser">Réinitialiser</button> 
 			        	<a th:href="${back}">Annuler</a>
 			    </div>
 			</form>
