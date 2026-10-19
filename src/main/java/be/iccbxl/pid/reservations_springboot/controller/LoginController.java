@@ -1,15 +1,33 @@
 package be.iccbxl.pid.reservations_springboot.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpServletRequest;
+import be.iccbxl.pid.reservations_springboot.model.User;
+import be.iccbxl.pid.reservations_springboot.service.EmailService;
+import be.iccbxl.pid.reservations_springboot.service.PasswordResetTokenService;
+import be.iccbxl.pid.reservations_springboot.service.UserService;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Controller
 public class LoginController {
+    private final UserService userService;
+    private final PasswordResetTokenService tokenService;
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
+
+    public LoginController(UserService userService, PasswordResetTokenService tokenService,
+            EmailService emailService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+        this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("/login")
     public String login(
@@ -33,4 +51,67 @@ public class LoginController {
         return "authentication/login";
     }
 
+    // Page "mot de passe oublié"
+    @GetMapping("/forgot-password")
+    public String forgotPasswordForm() {
+        return "authentication/forgot-password";
+    }
+
+    // Form submit - on ne révèle pas si l'email existe (pour éviter le user enumeration)
+    @PostMapping("/forgot-password")
+    public String handleForgotPassword(@RequestParam("email") @NotBlank @Email String email, Model model) {
+        User user = userService.findByEmail(email);
+        System.out.println(user);   //DEBUG
+
+        if (user != null) {
+            var token = tokenService.createTokenForUser(user);
+            emailService.sendPasswordResetMail(email, token.getToken());
+        }
+        // Toujours montrer le même message
+        model.addAttribute("successMessage", "Si un compte existe pour cet e-mail, tu recevras un lien de réinitialisation.");
+        return "authentication/forgot-password";
+    }
+
+    // Page reset form (avec token en query param)
+    @GetMapping("/reset-password")
+    public String resetPasswordForm(@RequestParam("token") String token, Model model) {
+        var user = tokenService.validatePasswordResetToken(token);
+        if (user == null) {
+            model.addAttribute("errorMessage", "Lien invalide ou expiré.");
+            return "authentication/reset-password";
+        }
+        model.addAttribute("token", token);
+        return "authentication/reset-password";
+    }
+
+    // Submit nouveau mot de passe
+    @PostMapping("/reset-password")
+    public String handleResetPassword(@RequestParam String token,
+            @RequestParam("password") @NotBlank String password,
+            @RequestParam("confirmPassword") @NotBlank String confirmPassword,
+            Model model) {
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("token", token);
+            model.addAttribute("errorMessage", "Les mots de passe ne correspondent pas.");
+            return "authentication/reset-password";
+        }
+
+        var user = tokenService.validatePasswordResetToken(token);
+        if (user == null) {
+            model.addAttribute("errorMessage", "Lien invalide ou expiré.");
+            return "authentication/reset-password";
+        }
+
+        try {
+            var passwordField = User.class.getDeclaredField("password");
+            passwordField.setAccessible(true);
+            passwordField.set(user, passwordEncoder.encode(password));
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Impossible de mettre à jour le mot de passe.", e);
+        }
+        userService.updateUser(user.getId(), user);
+        tokenService.deleteToken(token);
+
+        return "authentication/reset-success";
+    }
 }
