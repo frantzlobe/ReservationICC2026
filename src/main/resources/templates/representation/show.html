@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title>Fiche d'une représentation</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+        <article>
+
+            <h1 th:if="${date != null and heure != null}"
+                th:text="|Représentation du ${date} à ${heure}|">
+                Représentation du 15/01/2020 à 13:30
+            </h1>
+
+            <h1 th:unless="${date != null and heure != null}">
+                Date de représentation à déterminer
+            </h1>
+
+            <p>
+                <strong>Spectacle :</strong>
+
+                <span th:text="${representation.show.title}">
+                    Ayiti
+                </span>
+            </p>
+
+            <p>
+                <strong>Lieu :</strong>
+
+                <!-- Lieu propre à la représentation -->
+                <span th:if="${representation.location != null}"
+                      th:text="${representation.location.designation}">
+                    Art Center
+                </span>
+
+                <!-- Sinon, lieu de création du spectacle -->
+                <span th:if="${representation.location == null and representation.show.location != null}"
+                      th:text="${representation.show.location.designation}">
+                    Lieu de création
+                </span>
+
+                <!-- Aucun lieu renseigné -->
+                <em th:if="${representation.location == null and representation.show.location == null}">
+                    À déterminer
+                </em>
+
+            </p>
+
+        </article>
+
+        <nav>
+            <a th:href="@{/representations}">
+                Retour à la liste
+            </a>
+        </nav>
+
+    </div>
+</body>
+</html>
