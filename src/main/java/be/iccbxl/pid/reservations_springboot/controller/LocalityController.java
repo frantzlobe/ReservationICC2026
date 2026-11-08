@@ -27,7 +27,7 @@ public class LocalityController {
         return "locality/index";
     }
 	
-	@GetMapping("/localities/{id}")
+		@GetMapping("/localities/{id}")
     public String show(Model model, @PathVariable("id") String id) {
 		Locality locality = service.get(id);
 
@@ -36,6 +36,7 @@ public class LocalityController {
 		
         return "locality/show";
     }
+
 
 }
 
