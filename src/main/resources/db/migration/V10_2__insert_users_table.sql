@@ -1,0 +1,2 @@
+-- Les utilisateurs ont déjà été insérés.
+-- Aucune nouvelle insertion nécessaire.

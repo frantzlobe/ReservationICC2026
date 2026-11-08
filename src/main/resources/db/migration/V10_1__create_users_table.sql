@@ -1,0 +1,3 @@
+-- La table users existe déjà.
+-- Elle a été créée par la migration V2_1.
+-- Aucune opération nécessaire.

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+
 import java.util.Arrays;
 
 import org.springframework.security.core.Authentication;
@@ -53,7 +54,9 @@ public class ProfileController {
         dto.setEmail(user.getEmail());
         dto.setLangue(user.getLangue());System.out.println("");
         dto.setLogin(user.getLogin());
-        dto.setRole(user.getRole().getValue());
+        if (!user.getRoles().isEmpty()) {
+    dto.setRole(user.getRoles().get(0).getRole());
+}
         
         //Conversion du code linguistique en nom de la langue
         Language userLanguage = Arrays.stream(Language.values())
