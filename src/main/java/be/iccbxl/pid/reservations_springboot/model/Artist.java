@@ -5,10 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import java.util.List;
+import java.util.ArrayList;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+
 
 @Entity
 @Table(name="artists")
@@ -18,7 +22,9 @@ public class Artist {
 	private Long id;
 	private String firstname;
 	private String lastname;
-	
+	@ManyToMany(mappedBy = "artists")
+	private List<Type> types = new ArrayList<>();
+
 	protected Artist() {}
 
 	public Artist(String firstname, String lastname) {
@@ -44,6 +50,27 @@ public class Artist {
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+	public List<Type> getTypes() {
+		return types;
+	}
+
+	public Artist addType(Type type) {
+		if(!this.types.contains(type)) {
+			this.types.add(type);
+			type.addArtist(this);
+		}
+		
+		return this;
+	}
+	
+	public Artist removeType(Type type) {
+		if(this.types.contains(type)) {
+			this.types.remove(type);
+			type.getArtists().remove(this);
+		}
+		
+		return this;
 	}
 
 	@Override
