@@ -8,118 +8,161 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;
-	private String login;
-	private String password;
-	private String firstname;
-	private String lastname;
-private String email;
-	private String langue;
-	private LocalDateTime created_at;
-	
-	@ManyToMany(mappedBy = "users")
-	private List<Role> roles = new ArrayList<>();
 
-	public User() {}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	public User(String login, String firstname, String lastname) {
-		this.login = login;
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.created_at = LocalDateTime.now();
-	}
+    private String login;
+    private String password;
+    private String firstname;
+    private String lastname;
+    private String email;
+    private String langue;
+    private LocalDateTime created_at;
 
-	public Long getId() {
-		return id;
-	}	
-	
-	public String getLogin() {
-		return login;
-	}
+    // Relation ManyToMany avec Role
+    @ManyToMany(mappedBy = "users")
+    private List<Role> roles = new ArrayList<>();
 
-	public void setLogin(String login) {
-		this.login = login;
-	}
+    // Nouvelle relation ManyToMany avec Representation
+    @ManyToMany(mappedBy = "users")
+    private List<Representation> representations = new ArrayList<>();
 
-	public String getPassword() {
-		return password;
-	}
+    // Constructeur vide obligatoire pour JPA
+    public User() {
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    // Constructeur
+    public User(String login, String password, String firstname,
+                String lastname, String email, String langue) {
+        this.login = login;
+        this.password = password;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.langue = langue;
+        this.created_at = LocalDateTime.now();
+    }
 
-	public String getFirstname() {
-		return firstname;
-	}
+    // Getters et setters
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getLastname() {
-		return lastname;
-	}
+    public String getLogin() {
+        return login;
+    }
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
+    public void setLogin(String login) {
+        this.login = login;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	 
-        public String getLangue() {
-		return langue;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setLangue(String langue) {
-		this.langue = langue;
-	}
+    public String getFirstname() {
+        return firstname;
+    }
 
-	public List<Role> getRoles() {
-		return roles;
-	}
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
 
-	public LocalDateTime getCreated_at() {
-		return created_at;
-	}
-	
-	public User addRole(Role role) {
-		if(!this.roles.contains(role)) {
-			this.roles.add(role);
-			role.addUser(this);
-		}
-		
-		return this;
-	}
-	
-	public User removeRole(Role role) {
-		if(this.roles.contains(role)) {
-			this.roles.remove(role);
-			role.getUsers().remove(this);
-		}
-		
-		return this;
-	}
+    public String getLastname() {
+        return lastname;
+    }
 
-	@Override
-	public String toString() {
-		return login + "(" + firstname + " " + lastname + ")";
-	}
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLangue() {
+        return langue;
+    }
+
+    public void setLangue(String langue) {
+        this.langue = langue;
+    }
+
+    public LocalDateTime getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
+
+    // Méthodes pour les rôles
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public User addRole(Role role) {
+        if (!this.roles.contains(role)) {
+            this.roles.add(role);
+            role.getUsers().add(this);
+        }
+
+        return this;
+    }
+
+    public User removeRole(Role role) {
+        if (this.roles.contains(role)) {
+            this.roles.remove(role);
+            role.getUsers().remove(this);
+        }
+
+        return this;
+    }
+
+    // Méthodes pour les représentations
+
+    public List<Representation> getRepresentations() {
+        return representations;
+    }
+
+    public User addRepresentation(Representation representation) {
+        if (!this.representations.contains(representation)) {
+            this.representations.add(representation);
+            representation.addUser(this);
+        }
+
+        return this;
+    }
+
+    public User removeRepresentation(Representation representation) {
+        if (this.representations.contains(representation)) {
+            this.representations.remove(representation);
+            representation.getUsers().remove(this);
+        }
+
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return login + "(" + firstname + " " + lastname + ")";
+    }
 }
-
