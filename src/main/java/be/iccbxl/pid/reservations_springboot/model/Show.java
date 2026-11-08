@@ -4,12 +4,14 @@ package be.iccbxl.pid.reservations_springboot.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -40,6 +42,7 @@ public class Show {
     private Location location;
 
     private boolean bookable;
+
     private double price;
 
     @Column(name = "created_at")
@@ -48,9 +51,16 @@ public class Show {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(targetEntity=Representation.class, mappedBy="show")
-	private List<Representation> representations = new ArrayList<>();
+    // Relation avec les représentations
+    @OneToMany(mappedBy = "show")
+    private List<Representation> representations = new ArrayList<>();
 
+    // Relation avec les artistes et leurs fonctions
+    @ManyToMany(mappedBy = "shows")
+    private List<ArtistType> artistTypes = new ArrayList<>();
+
+
+    // CONSTRUCTEURS
 
     public Show() {
     }
@@ -70,6 +80,9 @@ public class Show {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = null;
     }
+
+
+    // GETTERS ET SETTERS
 
     public Long getId() {
         return id;
@@ -159,31 +172,74 @@ public class Show {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-public List<Representation> getRepresentations() {
-		return representations;
-	}
-
-	public Show addRepresentation(Representation representation) {
-		if(!this.representations.contains(representation)) {
-			this.representations.add(representation);
-			representation.setShow(this);
-		}
-		
-		return this;
-	}
-	
-	public Show removeRepresentation(Representation representation) {
-		if(this.representations.contains(representation)) {
-			this.representations.remove(representation);
-			if(representation.getLocation().equals(this)) {
-				representation.setLocation(null);
-			}
-		}
-		
-		return this;
-	}
 
 
+    // RELATION AVEC REPRESENTATION
+
+    public List<Representation> getRepresentations() {
+        return representations;
+    }
+
+    public Show addRepresentation(Representation representation) {
+
+        if (representation != null
+                && !this.representations.contains(representation)) {
+
+            this.representations.add(representation);
+            representation.setShow(this);
+        }
+
+        return this;
+    }
+
+    public Show removeRepresentation(Representation representation) {
+
+        if (representation != null
+                && this.representations.contains(representation)) {
+
+            this.representations.remove(representation);
+
+            if (representation.getShow() == this) {
+                representation.setShow(null);
+            }
+        }
+
+        return this;
+    }
+
+
+    // RELATION AVEC ARTISTTYPE
+
+    public List<ArtistType> getArtistTypes() {
+        return artistTypes;
+    }
+
+    public Show addArtistType(ArtistType artistType) {
+
+        if (artistType != null
+                && !this.artistTypes.contains(artistType)) {
+
+            this.artistTypes.add(artistType);
+            artistType.addShow(this);
+        }
+
+        return this;
+    }
+
+    public Show removeArtistType(ArtistType artistType) {
+
+        if (artistType != null
+                && this.artistTypes.contains(artistType)) {
+
+            this.artistTypes.remove(artistType);
+            artistType.getShows().remove(this);
+        }
+
+        return this;
+    }
+
+
+    // AFFICHAGE DE L'OBJET
 
     @Override
     public String toString() {
@@ -196,6 +252,8 @@ public List<Representation> getRepresentations() {
                 + ", price=" + price
                 + ", createdAt=" + createdAt
                 + ", updatedAt=" + updatedAt
-                + ", representations=" + representations.size() + "]";
+                + ", representations=" + representations.size()
+                + ", artistTypes=" + artistTypes.size()
+                + "]";
     }
 }
