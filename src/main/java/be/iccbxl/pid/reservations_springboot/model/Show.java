@@ -2,7 +2,8 @@
 package be.iccbxl.pid.reservations_springboot.model;
 
 import java.time.LocalDateTime;
-
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import com.github.slugify.Slugify;
@@ -45,6 +47,10 @@ public class Show {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(targetEntity=Representation.class, mappedBy="show")
+	private List<Representation> representations = new ArrayList<>();
+
 
     public Show() {
     }
@@ -153,6 +159,31 @@ public class Show {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+public List<Representation> getRepresentations() {
+		return representations;
+	}
+
+	public Show addRepresentation(Representation representation) {
+		if(!this.representations.contains(representation)) {
+			this.representations.add(representation);
+			representation.setShow(this);
+		}
+		
+		return this;
+	}
+	
+	public Show removeRepresentation(Representation representation) {
+		if(this.representations.contains(representation)) {
+			this.representations.remove(representation);
+			if(representation.getLocation().equals(this)) {
+				representation.setLocation(null);
+			}
+		}
+		
+		return this;
+	}
+
+
 
     @Override
     public String toString() {
@@ -164,6 +195,7 @@ public class Show {
                 + ", bookable=" + bookable
                 + ", price=" + price
                 + ", createdAt=" + createdAt
-                + ", updatedAt=" + updatedAt + "]";
+                + ", updatedAt=" + updatedAt
+                + ", representations=" + representations.size() + "]";
     }
 }
