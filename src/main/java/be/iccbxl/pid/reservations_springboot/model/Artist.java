@@ -11,43 +11,44 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "artists")
+@Table(name="artists")
 public class Artist {
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+	private String firstname;
+	private String lastname;
+	
+	protected Artist() {}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	public Artist(String firstname, String lastname) {
+		this.firstname = firstname;
+		this.lastname = lastname;
+	}
 
-    @NotBlank(message = "The firstname must not be empty.")
-    @Size(min = 2, max = 60,
-          message = "The firstname must be between 2 and 60 characters long.")
-    private String firstname;
+	public Long getId() {
+		return id;
+	}
 
-    @NotBlank(message = "The lastname must not be empty.")
-    @Size(min = 2, max = 60,
-          message = "The lastname must be between 2 and 60 characters long.")
-    private String lastname;
+	public String getFirstname() {
+		return firstname;
+	}
 
-    public  Artist() {
-    }
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public String getLastname() {
+		return lastname;
+	}
 
-    public String getFirstname() {
-        return firstname;
-    }
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
+	@Override
+	public String toString() {
+		return firstname + " " + lastname;
+	}
+	
 }

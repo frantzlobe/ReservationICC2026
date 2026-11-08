@@ -75,24 +75,21 @@ public class ArtistController {
 		
 		if(existing==null) {
 			return "artist/index";
-		}		
+		}
 	
 	    	service.updateArtist(id, artist);
-			redirAttrs.addFlashAttribute("successMessage", "Artiste modifié avec succès.");  
+			redirAttrs.addFlashAttribute("successMessage", "Artiste modifié avec succès.");
     
 		return "redirect:/artists/"+artist.getId();
 	}
 
 @GetMapping("/artists/create")
-	public String create(Model model) {
-	    if (!model.containsAttribute("artist")) {
-	        model.addAttribute("artist", new Artist());
-    }
+	public String create(Model model, @ModelAttribute("artist") Artist artist) {
 	    return "artist/create";
 	}
 	
 	@PostMapping("/artists/create")
-	public String store(@Valid @ModelAttribute Artist artist, BindingResult bindingResult, 
+	public String store(@Valid @ModelAttribute Artist artist, BindingResult bindingResult,
 		Model model, RedirectAttributes redirAttrs) {
 
 	    if (bindingResult.hasErrors()) {
@@ -110,7 +107,7 @@ public class ArtistController {
 	public String delete(@PathVariable long id, Model model, RedirectAttributes redirAttrs) {
 	    Artist existing = service.getArtist(id);
 		
-	    if(existing!=null) {		
+	    if(existing!=null) {
 	    	service.deleteArtist(id);
 			redirAttrs.addFlashAttribute("successMessage", "Artiste supprimé avec succès.");
 	    }else{
