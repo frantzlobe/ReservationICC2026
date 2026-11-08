@@ -42,6 +42,6 @@ public class TypeService {
 	}
 
     public Type get(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    return getType(id);
+}
 }

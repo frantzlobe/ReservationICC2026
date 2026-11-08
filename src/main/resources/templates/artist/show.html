@@ -1,29 +1,74 @@
+
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout"
- layout:decorate="~{layouts/main}">
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
 <head>
-<title>Fiche d'un artiste</title>
+    <title>Fiche d'un artiste</title>
 </head>
+
 <body>
-	<div class="container">
-		<div id="notification" th:replace="~{main :: notification}"></div>
-	     <div layout:fragment="content">
-	        <h2 th:text="|${artist.firstname}  ${artist.lastname}|">Bob Sull</h2>      
-	        
-	        <div class="actions">
-		<a th:href="@{/artists/{id}/edit(id=${artist.id})}">Edit</a>
-		
-		<form th:id="|deleteForm-${artist.id}|" 
-		   th:action="@{/artists/{id}(id=${artist.id})}" th:method="delete">
-	         	    <a href="#" th:onclick="|if(confirm('Confirm delete artist #${artist.id}')) 
-	        		document.getElementById('deleteForm-${artist.id}').submit(); 
-	         		return false;|">Delete</a>
-		</form>
+    <div class="container">
 
-	        </div>
+        <div id="notification"
+             th:replace="~{main :: notification}">
+        </div>
 
-   	        <nav><a th:href="@{/artists}">Retour à l'index</a></nav>
-	     </div>
-	</div>
+        <div layout:fragment="content">
+
+            <h2 th:text="|${artist.firstname} ${artist.lastname}|">
+                Bob Sull
+            </h2>
+
+            <!-- Actions existantes -->
+            <div class="actions">
+
+                <a th:href="@{/artists/{id}/edit(id=${artist.id})}">
+                    Edit
+                </a>
+
+                <form th:id="|deleteForm-${artist.id}|"
+                      th:action="@{/artists/{id}(id=${artist.id})}"
+                      th:method="delete">
+
+                    <a href="#"
+                       th:onclick="|if(confirm('Confirm delete artist #${artist.id}')) {
+                           document.getElementById('deleteForm-${artist.id}').submit();
+                       }
+                       return false;|">
+                        Delete
+                    </a>
+
+                </form>
+
+            </div>
+
+            <!-- NOUVELLE PARTIE : types de l'artiste -->
+            <h2>Liste des types</h2>
+
+            <ul th:unless="${#lists.isEmpty(artist.types)}">
+
+                <li th:each="type : ${artist.types}"
+                    th:text="${type.type}">
+                    Type
+                </li>
+
+            </ul>
+
+            <p th:if="${#lists.isEmpty(artist.types)}">
+                Aucun type associé à cet artiste.
+            </p>
+
+            <!-- Retour -->
+            <nav>
+                <a th:href="@{/artists}">
+                    Retour à l'index
+                </a>
+            </nav>
+
+        </div>
+    </div>
 </body>
 </html>

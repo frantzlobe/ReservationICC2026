@@ -1,16 +1,45 @@
-<!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout"
- layout:decorate="~{layouts/main}">
-<head>
-<title>Fiche d'un type</title>
-</head>
-<body>
-	<div class="container">
-	     <div layout:fragment="content">
-	        <h1 th:text="${#strings.capitalize(type.type)}">Acteur</h1>
 
-	        <nav><a th:href="@{/types}">Retour à l'index</a></nav>
-	     </div>
-	</div>
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<head>
+    <title>Fiche d'un type</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <div layout:fragment="content">
+
+            <h1 th:text="${#strings.capitalize(type.type)}">
+                Acteur
+            </h1>
+
+            <h2>Liste des artistes</h2>
+
+            <ul th:unless="${#lists.isEmpty(type.artists)}">
+
+                <li th:each="artist : ${type.artists}"
+                    th:text="|${artist.firstname} ${artist.lastname}|">
+                    Firstname Lastname
+                </li>
+
+            </ul>
+
+            <p th:if="${#lists.isEmpty(type.artists)}">
+                Aucun artiste associé à ce type.
+            </p>
+
+            <nav>
+                <a th:href="@{/types}">
+                    Retour à l'index
+                </a>
+            </nav>
+
+        </div>
+    </div>
 </body>
 </html>
